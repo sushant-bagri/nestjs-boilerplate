@@ -10,9 +10,9 @@ export function setupSwagger(app: INestApplication) {
   const localhostPort: number = Number(process.env.PORT);
   const localhostUrl = localhostPort ? `http://localhost:${localhostPort}` : 'http://localhost:3000';
   const options = new DocumentBuilder()
-    .setTitle('Nest Boiler-plate with postgres')
-    .setDescription('This swagger documentation includes the Nest Boiler-plate with postgres')
-    .addTag('Nest Boiler-plate with postgres')
+    .setTitle('Nest Boiler-plate with MongoDB')
+    .setDescription('This swagger documentation includes the Nest Boiler-plate with MongoDB')
+    .addTag('Nest Boiler-plate with MongoDB')
     .setVersion('1.0.0')
     .addServer(localhostUrl)
     .build();

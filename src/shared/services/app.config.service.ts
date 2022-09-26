@@ -1,15 +1,15 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { MongooseModuleOptions } from '@nestjs/mongoose';
 import * as dotenv from 'dotenv';
 import { logger } from '../../config/logger';
-import rdbmsConfig from '../../config/rdbms';
-import circularStructure from '../../utils/circular.structure';
-import { SnakeNamingStrategy } from '../../utils/snake.naming.strategy';
+import validateEnv from '../../utils/validate.env';
 
 export class AppConfigService {
   constructor(){
     dotenv.config({
       path: '.env'
     });
+
+    validateEnv();
 
     for (const envName of Object.keys(process.env)){
       process.env[envName] = process.env[envName].replace(/\\n/g, '\n');
@@ -36,44 +36,63 @@ export class AppConfigService {
     return this.nodeEnv === 'test';
   }
 
-  get typeOrmConfig(): TypeOrmModuleOptions {
-    let entities = [__dirname + '/../../modules/**/*.entity{.ts,.js}'];
-    // let entities = [TransactionEntity, PayoutEntity]
-    let migrations = [__dirname + '/../../migrations/*{.ts,.js}'];
+  get getMongoConfig(): MongooseModuleOptions {
+    // @TODO What about server test case runner?
+    // Return different url if it's test or development environment
 
-    if ((module as any).hot) {
-      const entityContext = (require as any).context('./../../modules', true, /\.entity\.ts$/);
-      entities = entityContext.keys().map((id: any) => {
-        const entityModule = entityContext(id);
-        const [entity] = Object.values(entityModule);
+    let uri: string;
+    let awsConfig: MongooseModuleOptions = {};
 
-        return entity;
-      });
-      const migrationContext = (require as any).context('./../../migrations', false, /\.ts$/);
-      migrations = migrationContext.keys().map((id: any) => {
-        const migrationModule = migrationContext(id);
-        const [migration] = Object.values(migrationModule);
+    let isDbNamePresent = false;
+    let dbName = '';
 
-        return migration;
-      });
+    // hack to run on local
+    if (this.isTestEnv) {
+      isDbNamePresent = true;
+      dbName = 'tag_test';
+    } else {
+      dbName = this.get('MONGO_DB_NAME');
+      if (dbName.trim() !== '') {
+        isDbNamePresent = true;
+      }
+    }
+    let authStr = '';
+    let authDbStr = '';
+    if (this.get('MONGO_DB_USER_NAME')) {
+      const MONGO_USERNAME = this.get('MONGO_DB_USER_NAME');
+      const MONGO_PASSWORD = this.get('MONGO_DB_PASSWORD');
+      authStr = `${MONGO_USERNAME}:${MONGO_PASSWORD}@`;
+      authDbStr = '?authSource=admin';
     }
 
-    logger.info(
-      `TypeOrm config: ${JSON.stringify({
-        ...rdbmsConfig,
-        entities,
-        migrations,
-        namingStrategy: new SnakeNamingStrategy(),
-      }, circularStructure())}`,
-    );
+    const dbStr = isDbNamePresent ? `/${dbName}` : '';
 
-    return {
-      ...rdbmsConfig,
-      entities,
-      migrations,
-      namingStrategy: new SnakeNamingStrategy(),
-      autoLoadEntities: true,
-      relationLoadStrategy: 'query',
+    if (this.isTestEnv || this.isDevEnv) {
+      uri = `mongodb://${authStr}${this.get('MONGO_DB_HOST')}${dbStr}${authDbStr}`;
+    } else {
+      uri = `mongodb+srv://${authStr}${this.get('MONGO_DB_HOST')}/${dbName}${authDbStr}`;
+
+      if (this.get('AWS_ACTIVE') && (this.get('AWS_ACTIVE') === 'true' || this.get('AWS_ACTIVE') === '1')) {
+        awsConfig = {
+          authSource: '$external',
+          authMechanism: 'MONGODB-AWS',
+        };
+      }
+    }
+
+    const finalConfig: MongooseModuleOptions = {
+      uri,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      // useFindAndModify: false,
+      retryWrites: false,
+      // w: "majority",
+      ...awsConfig,
     };
-  }  
+
+    logger.info(`MongoDB Config for ${this.nodeEnv} environment`);
+    logger.info(JSON.stringify(finalConfig));
+
+    return finalConfig;
+  }
 }

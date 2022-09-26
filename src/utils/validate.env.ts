@@ -2,11 +2,8 @@ import { cleanEnv, port, str } from "envalid"
 
 const validateEnv = () => {
   cleanEnv(process.env, {
-    POSTGRES_HOST: str(),
-    POSTGRES_PORT: port(),
-    POSTGRES_USER: str(),
-    POSTGRES_PASSWORD: str(),
-    POSTGRES_DB: str(),
+    MONGO_DB_HOST: str(),
+    MONGO_DB_NAME: str(),
     PORT: port()
   })
 };

@@ -1,18 +1,16 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiTags } from '@nestjs/swagger';
-import { HealthCheck, HealthCheckService, TypeOrmHealthIndicator } from "@nestjs/terminus";
+import { HealthCheck, HealthCheckService, MongooseHealthIndicator } from "@nestjs/terminus";
 
 @Controller('health')
 @ApiTags('Health')
 export class HealthController {
-  constructor(
-    private readonly healthCheck: HealthCheckService,
-    private typeOrmHealthIndicator: TypeOrmHealthIndicator,
-  ){}
+  constructor(private _healthCheck: HealthCheckService, private _mongooseHealth: MongooseHealthIndicator) {}
+
 
   @Get()
   @HealthCheck()
   public async health(){
-    return this.healthCheck.check([() => this.typeOrmHealthIndicator.pingCheck('postgres')])
+    return this._healthCheck.check([() => this._mongooseHealth.pingCheck('mongoDB')])
   }
 }

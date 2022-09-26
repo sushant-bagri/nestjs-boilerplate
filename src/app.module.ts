@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 import { HealthModule } from './modules/health/health.module';
 import { AppConfigService } from './shared/services/app.config.service';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
+    MongooseModule.forRootAsync({
       imports: [SharedModule],
-      useFactory: (appConfigService: AppConfigService) => appConfigService.typeOrmConfig,
+      useFactory: (appConfigService: AppConfigService) => appConfigService.getMongoConfig,
       inject: [AppConfigService] 
     }),
     HealthModule
