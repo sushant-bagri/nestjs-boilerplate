@@ -1,6 +1,6 @@
-import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
-import { SnakeNamingStrategy } from "../utils/snake.naming.strategy";
-import "./env.setup";
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { SnakeNamingStrategy } from '../utils/snake.naming.strategy';
+import './env.setup';
 
 const SCHEMA = 'local_db_schema';
 const config: Record<string, PostgresConnectionOptions> = {
@@ -77,19 +77,18 @@ const config: Record<string, PostgresConnectionOptions> = {
     namingStrategy: new SnakeNamingStrategy(),
     migrations: ['dist/api/src/migrations/*{.ts,.js}'],
     migrationsRun: true,
-    schema: SCHEMA
-  }
+    schema: SCHEMA,
+  },
 };
 
 const getRdbmsConfig = (env?: string) => {
-  if(!env){
+  if (!env) {
     env = 'development';
   }
   const configuration: PostgresConnectionOptions = config[env];
 
   return configuration;
-}
-
+};
 
 const rdbmsConfig: PostgresConnectionOptions = getRdbmsConfig(process.env.NODE_ENV);
 

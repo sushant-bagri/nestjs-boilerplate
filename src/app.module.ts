@@ -9,9 +9,9 @@ import { SharedModule } from './shared/shared.module';
     TypeOrmModule.forRootAsync({
       imports: [SharedModule],
       useFactory: (appConfigService: AppConfigService) => appConfigService.typeOrmConfig,
-      inject: [AppConfigService] 
+      inject: [AppConfigService],
     }),
-    HealthModule
+    HealthModule,
   ],
   controllers: [],
   providers: [],

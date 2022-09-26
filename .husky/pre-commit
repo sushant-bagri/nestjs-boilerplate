@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+SERVICE_NAME="Nest-Js Boiler Plate"
+echo "RUNNING PRE_COMMIT HOOK FOR: $SERVICE_NAME"
+echo "running prettier..."
+npm run prettier-format-all
+echo "completed running prettier..."
+echo "fixing possible lint errors..."
+npm run lint-fix
+echo "completed running eslint fix..."
+echo "running eslint..."
+npm run lint
+echo "completed running eslint..."
+git add .
+echo "COMPLETED PRE_COMMIT HOOK FOR: $SERVICE_NAME"
