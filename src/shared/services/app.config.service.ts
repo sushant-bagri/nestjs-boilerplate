@@ -4,33 +4,33 @@ import { logger } from '../../config/logger';
 import validateEnv from '../../utils/validate.env';
 
 export class AppConfigService {
-  constructor(){
+  constructor() {
     dotenv.config({
-      path: '.env'
+      path: '.env',
     });
 
     validateEnv();
 
-    for (const envName of Object.keys(process.env)){
+    for (const envName of Object.keys(process.env)) {
       process.env[envName] = process.env[envName].replace(/\\n/g, '\n');
     }
-  };
+  }
 
-  public get(key: string): string{
+  public get(key: string): string {
     return process.env[key];
-  };
+  }
 
   public getNumber(key: string): number {
     return Number(process.env[key]);
-  };
+  }
 
-  get nodeEnv(): string{
+  get nodeEnv(): string {
     return this.get('NODE_ENV') || 'development';
-  };
+  }
 
   get isDevEnv(): boolean {
     return this.nodeEnv === 'development';
-  };
+  }
 
   get isTestEnv(): boolean {
     return this.nodeEnv === 'test';

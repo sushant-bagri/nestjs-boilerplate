@@ -1,13 +1,10 @@
-import { Module } from "@nestjs/common";
-import { AppConfigService } from "./services/app.config.service";
+import { Module } from '@nestjs/common';
+import { AppConfigService } from './services/app.config.service';
 
-
-const providers = [
-  AppConfigService
-]
+const providers = [AppConfigService];
 @Module({
-  imports:[],
+  imports: [],
   providers: [...providers],
-  exports: [...providers]
+  exports: [...providers],
 })
-export class SharedModule{}
+export class SharedModule {}

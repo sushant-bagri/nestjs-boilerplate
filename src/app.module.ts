@@ -9,9 +9,9 @@ import { SharedModule } from './shared/shared.module';
     MongooseModule.forRootAsync({
       imports: [SharedModule],
       useFactory: (appConfigService: AppConfigService) => appConfigService.getMongoConfig,
-      inject: [AppConfigService] 
+      inject: [AppConfigService],
     }),
-    HealthModule
+    HealthModule,
   ],
   controllers: [],
   providers: [],
