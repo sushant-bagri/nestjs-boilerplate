@@ -15,7 +15,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
     let statusCode = exception.getStatus();
-    const r = exception.getResponse() as any;
+    const r = exception.getResponse() as Record<string, unknown>;
 
     if (_.isArray(r.message) && r.message[0] instanceof ValidationError) {
       statusCode = HttpStatus.UNPROCESSABLE_ENTITY;

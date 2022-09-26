@@ -1,0 +1,13 @@
+node_modules
+.serverless
+testScripts
+.indentation
+.husky
+.vscode
+common
+coverage
+nyc_output
+test
+.eslintrc.js
+migrations
+dist
